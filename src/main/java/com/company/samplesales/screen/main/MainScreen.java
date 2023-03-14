@@ -1,18 +1,17 @@
 package com.company.samplesales.screen.main;
 
+import com.company.samplesales.security.keycloak.AppJmixOidcUser;
 import io.jmix.ui.ScreenTools;
 import io.jmix.ui.component.AppWorkArea;
 import io.jmix.ui.component.Button;
 import io.jmix.ui.component.Window;
 import io.jmix.ui.component.mainwindow.Drawer;
+import io.jmix.ui.component.mainwindow.UserIndicator;
 import io.jmix.ui.icon.JmixIcon;
 import io.jmix.ui.navigation.Route;
-import io.jmix.ui.screen.Screen;
-import io.jmix.ui.screen.Subscribe;
-import io.jmix.ui.screen.UiController;
-import io.jmix.ui.screen.UiControllerUtils;
-import io.jmix.ui.screen.UiDescriptor;
+import io.jmix.ui.screen.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @UiController("sales_MainScreen")
 @UiDescriptor("main-screen.xml")
@@ -28,7 +27,8 @@ public class MainScreen extends Screen implements Window.HasWorkArea {
     private Drawer drawer;
     @Autowired
     private Button collapseDrawerButton;
-
+    @Autowired
+    private UserIndicator userIndicator;
 
     @Override
     public AppWorkArea getWorkArea() {
@@ -52,4 +52,14 @@ public class MainScreen extends Screen implements Window.HasWorkArea {
 
         screenTools.handleRedirect();
     }
+
+    @Install(to = "userIndicator", subject = "formatter")
+    private String userIndicatorFormatter(UserDetails value) {
+        if (value instanceof AppJmixOidcUser) {
+            return ((AppJmixOidcUser) value).getFormattedName();
+        }
+        return value.getUsername();
+    }
+
+
 }
